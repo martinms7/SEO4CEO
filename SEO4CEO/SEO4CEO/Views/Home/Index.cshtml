@@ -1,8 +1,25 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model SearchRequest
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <div class="container">
+        <form>
+            <button class="btn-primary" asp-controller="home" asp-action="searchdefault">default search</button>
+        </form>
+        <form asp-action="SearchCustom" asp-controller="Home" method="post">
+            <label class="col-form-label" asp-for="Keywords"></label>
+            <input asp-for="Keywords" placeholder="Search terms here" />
+            <label class="col-form-label" asp-for="ExpectedUri"></label>
+            <input asp-for="ExpectedUri" placeholder="URL to check" />
+            <input class="btn-primary" type="submit" value="Custom Search"/>
+            @*<button class="btn-primary" asp-controller="Home" asp-action="SearchCustom">Custom Search</button>*@
+
+            @*<button class="btn-primary" type="submit">Test Button</button>*@
+            @*<input name="TestBtn" id="tstButton" class="btn-primary" type="submit" value="Test Button" />*@
+        </form>
+    </div>
 </div>
