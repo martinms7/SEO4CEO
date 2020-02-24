@@ -84,7 +84,7 @@ namespace SEO4CEO.Controllers
             sb.Remove(sb.Length - 1, 1);
             //[A-Za-z0-9]+\.(com|org|net)
 
-            return $"Test Action String:{keywords},URL:{uri}" +
+            return $"Keyword Search String:{keywords},Matching URL:{uri}" +
                 $"\n Sample Result Text:" +
                 $"\n {sb} ";
         }
