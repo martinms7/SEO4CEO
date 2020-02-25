@@ -1,0 +1,54 @@
+﻿@using Newtonsoft.Json;
+@model SearchRequest
+@{
+    Layout = "_Layout";
+}
+
+
+@if (Model.MatchedPositions != null)
+{
+    <div class="container">
+        <h5>
+            @Model.MatchedPositions.Count result(s) found for: @Model.ExpectedUri at following positions:
+        </h5>
+
+        @*<h1 data-bind="text: Keywords"></h1>*@
+
+        <table>
+            <thead>
+                <tr><th>Positions</th></tr>
+            </thead>
+            <tbody data-bind="foreach: MatchedPositions">
+                <tr>
+                    <td data-bind="text: $data"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        @*<ul>
+            @foreach (var position in Model.MatchedPositions)
+            {
+                <li>Position: @position</li>
+            }
+        </ul>*@
+
+        @*<table class="table-bordered">
+            <tbody>
+                @foreach (var position in Model.MatchedPositions)
+                {
+                    <tr class="active">
+                        <td>Position:</td>
+                        <td>@position</td>
+                    </tr>
+                 }
+            </tbody>
+        </table>*@
+    </div>
+    <script src="~/lib/knockout/knockout-3.5.1.js"></script>
+    <script type="text/javascript">
+
+    var viewModel = @Html.Raw(JsonConvert.SerializeObject(ViewData["Request"]));
+    ko.applyBindings(viewModel);
+
+    </script>
+}

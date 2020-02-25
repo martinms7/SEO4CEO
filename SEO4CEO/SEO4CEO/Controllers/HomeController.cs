@@ -23,6 +23,12 @@ namespace SEO4CEO.Controllers
 
         public IActionResult Index()
         {
+            var request = new SearchRequest()
+            {
+                Keywords = "Initial Words",
+                ExpectedUri = "Initial URI",
+                MatchedPositions = new List<int>()
+            };
             return View();
         }
 
@@ -31,16 +37,27 @@ namespace SEO4CEO.Controllers
             return View();
         }
 
-        public string SearchDefault()
+        public PartialViewResult SearchDefault()
         {
-            return FindUriInSearch("online title search", "propertyshark.com");
+            var request = new SearchRequest()
+            {
+                Keywords = "online title search",
+                ExpectedUri = "propertyshark.com",
+                MatchedPositions = new List<int>()
+            };
+            var returnStr = FindUriInSearch(request
+                );
+            ViewData["Request"] = request;
+            return PartialView("_PositionsView", request);
+            //return request;
         }
 
         public string SearchCustom(SearchRequest request)
         {
-            return FindUriInSearch(request.Keywords, request.ExpectedUri);
+            //return FindUriInSearch(request.Keywords, request.ExpectedUri);
+            return FindUriInSearch(request);
         }
-        private string FindUriInSearch(string keywords, string uri)
+        private string FindUriInSearch(SearchRequest request)
         {
             //https://www.google.com.au/search?num=100&q=online+title+search
             var client = new HttpClient();
@@ -48,7 +65,10 @@ namespace SEO4CEO.Controllers
             testUri.Scheme = "https";
             testUri.Host = "google.com.au";
             testUri.Path = @"search";
-            testUri.Query = "num=100&q=online+title+search";
+
+            var queryPart = request.Keywords.Replace(' ', '+');
+
+            testUri.Query = $"num=100&q={queryPart}";
 
             var response = client.GetStringAsync(testUri.Uri);
             var responsePage = response.Result;
@@ -65,26 +85,27 @@ namespace SEO4CEO.Controllers
                 } 
             }
 
-            var resultPositions = new Dictionary<string, int>();
+            //var resultPositions = new Dictionary<string, int>();
+             
             var sb = new StringBuilder();
-            sb.Append($"URI: {uri} \t Positions: ");
+            sb.Append($"URI: {request.ExpectedUri} \t Positions: ");
             foreach (var result in resultLinks) 
             {
                 var resultIndex = resultLinks.IndexOf(result);
                 if (resultIndex > 100)
                     break;
                 //var searchResultLinkMatch = Regex.Match(anchorMatch, @"(<a href="" / url"));
-                if (result.Contains(uri))
+                if (result.Contains(request.ExpectedUri))
                 {
-                    resultPositions.Add(result, resultIndex);
-
+                    //resultPositions.Add(result, resultIndex);
+                    request.MatchedPositions.Add(resultIndex);
                     sb.Append($"{resultIndex},");
                 }
             }
             sb.Remove(sb.Length - 1, 1);
             //[A-Za-z0-9]+\.(com|org|net)
 
-            return $"Keyword Search String:{keywords},Matching URL:{uri}" +
+            return $"Keyword Search String:{request.Keywords},Matching URL:{request.ExpectedUri}" +
                 $"\n Sample Result Text:" +
                 $"\n {sb} ";
         }
