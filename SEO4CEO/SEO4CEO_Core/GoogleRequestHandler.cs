@@ -9,7 +9,7 @@ namespace SEO4CEO_Core
 {
     public class GoogleRequestHandler:IGoogleRequestHandler
     {
-        private readonly static ILog log =
+        private readonly static ILog _log =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public string GetGoogleResponse(string keywords)
         {
@@ -19,7 +19,7 @@ namespace SEO4CEO_Core
             requestUri.Host = "google.com.au";
             requestUri.Path = @"search";
 
-            var queryPart = keywords.Replace(' ', '+');
+            var queryPart = !string.IsNullOrEmpty(keywords)? keywords.Replace(' ', '+') : string.Empty;
 
             requestUri.Query = $"num=100&q={queryPart}";
 
