@@ -6,6 +6,5 @@ namespace SEO4CEO.Models
     {
         public string Keywords { get; set; }
         public string ExpectedUri { get; set; }
-        public List<int> MatchedPositions;
     }
 }

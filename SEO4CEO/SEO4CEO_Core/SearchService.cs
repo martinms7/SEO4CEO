@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SEO4CEO_Core.DomainModels;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -18,20 +19,9 @@ namespace SEO4CEO_Core
         {
             _requestHandler = requestHandler;
         }
-        public IEnumerable<int> FindUriInSearch(string keywords, string expectedUri, List<int> matchedPositions)
+        public DomainResponse FindUriInSearch(DomainRequest request)
         {
-            //var client = new HttpClient();
-            //var testUri = new UriBuilder();
-            //testUri.Scheme = "https";
-            //testUri.Host = "google.com.au";
-            //testUri.Path = @"search";
-
-            //var queryPart = keywords.Replace(' ', '+');
-
-            //testUri.Query = $"num=100&q={queryPart}";
-
-            //var response = client.GetStringAsync(testUri.Uri);
-            var responsePage = _requestHandler.GetSearchResponse(keywords);
+            var responsePage = _requestHandler.GetSearchResponse(request.Keywords);
             var anchorMatches = Regex.Matches(responsePage, @"(<a.*?>.*?</a>)", RegexOptions.Singleline);
 
             var resultLinks = new List<string>();
@@ -48,17 +38,23 @@ namespace SEO4CEO_Core
             //var resultPositions = new Dictionary<string, int>();
 
             var sb = new StringBuilder();
-            sb.Append($"URI: {expectedUri} \t Positions: ");
+            sb.Append($"URI: {request.ExpectedUri} \t Positions: ");
+            var response = new DomainResponse()
+            {
+                ExpectedUri = request.ExpectedUri,
+                MatchedPositions = new List<int>()
+            };
+
             foreach (var result in resultLinks)
             {
                 var resultIndex = resultLinks.IndexOf(result);
                 if (resultIndex > 100)
                     break;
                 //var searchResultLinkMatch = Regex.Match(anchorMatch, @"(<a href="" / url"));
-                if (result.Contains(expectedUri))
+                if (result.Contains(request.ExpectedUri))
                 {
                     //resultPositions.Add(result, resultIndex);
-                    matchedPositions.Add(resultIndex);
+                    response.MatchedPositions.Add(resultIndex);
                     sb.Append($"{resultIndex},");
                 }
             }
@@ -68,7 +64,7 @@ namespace SEO4CEO_Core
             //return $"Keyword Search String:{keywords},Matching URL:{expectedUri}" +
             //    $"\n Sample Result Text:" +
             //    $"\n {sb} ";
-            return matchedPositions;
+            return response;
         }
     }
 }
