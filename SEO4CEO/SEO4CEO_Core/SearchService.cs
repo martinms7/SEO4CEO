@@ -8,20 +8,30 @@ namespace SEO4CEO_Core
 {
     public class SearchService : ISearchService
     {
-        public string FindUriInSearch(string keywords, string expectedUri, List<int> matchedPositions)
+        private ISearchRequestHandler _requestHandler;
+
+        public SearchService():this(new GoogleRequestHandler())
         {
-            var client = new HttpClient();
-            var testUri = new UriBuilder();
-            testUri.Scheme = "https";
-            testUri.Host = "google.com.au";
-            testUri.Path = @"search";
 
-            var queryPart = keywords.Replace(' ', '+');
+        }
+        public SearchService(ISearchRequestHandler requestHandler)
+        {
+            _requestHandler = requestHandler;
+        }
+        public IEnumerable<int> FindUriInSearch(string keywords, string expectedUri, List<int> matchedPositions)
+        {
+            //var client = new HttpClient();
+            //var testUri = new UriBuilder();
+            //testUri.Scheme = "https";
+            //testUri.Host = "google.com.au";
+            //testUri.Path = @"search";
 
-            testUri.Query = $"num=100&q={queryPart}";
+            //var queryPart = keywords.Replace(' ', '+');
 
-            var response = client.GetStringAsync(testUri.Uri);
-            var responsePage = response.Result;
+            //testUri.Query = $"num=100&q={queryPart}";
+
+            //var response = client.GetStringAsync(testUri.Uri);
+            var responsePage = _requestHandler.GetSearchResponse(keywords);
             var anchorMatches = Regex.Matches(responsePage, @"(<a.*?>.*?</a>)", RegexOptions.Singleline);
 
             var resultLinks = new List<string>();
@@ -55,9 +65,10 @@ namespace SEO4CEO_Core
             sb.Remove(sb.Length - 1, 1);
             //[A-Za-z0-9]+\.(com|org|net)
 
-            return $"Keyword Search String:{keywords},Matching URL:{expectedUri}" +
-                $"\n Sample Result Text:" +
-                $"\n {sb} ";
+            //return $"Keyword Search String:{keywords},Matching URL:{expectedUri}" +
+            //    $"\n Sample Result Text:" +
+            //    $"\n {sb} ";
+            return matchedPositions;
         }
     }
 }

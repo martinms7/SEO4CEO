@@ -2,24 +2,28 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using log4net;
+using log4net.Core;
 
 namespace SEO4CEO_Core
 {
     public class GoogleRequestHandler:IGoogleRequestHandler
     {
+        private readonly static ILog log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public string GetGoogleResponse(string keywords)
         {
             var client = new HttpClient();
-            var testUri = new UriBuilder();
-            testUri.Scheme = "https";
-            testUri.Host = "google.com.au";
-            testUri.Path = @"search";
+            var requestUri = new UriBuilder();
+            requestUri.Scheme = "https";
+            requestUri.Host = "google.com.au";
+            requestUri.Path = @"search";
 
             var queryPart = keywords.Replace(' ', '+');
 
-            testUri.Query = $"num=100&q={queryPart}";
+            requestUri.Query = $"num=100&q={queryPart}";
 
-            var response = client.GetStringAsync(testUri.Uri);
+            var response = client.GetStringAsync(requestUri.Uri);
             return response.Result;
         }
 

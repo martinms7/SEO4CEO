@@ -9,16 +9,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SEO4CEO.Models;
+using SEO4CEO_Core;
 
 namespace SEO4CEO.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ISearchService _searchService;
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
+            _searchService = new SearchService();
         }
 
         public IActionResult Index()
@@ -42,12 +45,14 @@ namespace SEO4CEO.Controllers
             var request = new SearchRequest()
             {
                 Keywords = "online title search",
-                ExpectedUri = "propertyshark.com",
+                ExpectedUri = "www.infotrack.com.au",
                 MatchedPositions = new List<int>()
             };
-            var returnStr = FindUriInSearch(request
-                );
-            ViewData["Request"] = request;
+            request.MatchedPositions = _searchService.FindUriInSearch(
+                request.Keywords,
+                request.ExpectedUri,
+                request.MatchedPositions).ToList();
+                
             return PartialView("_PositionsView", request);
             //return request;
         }
