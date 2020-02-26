@@ -9,5 +9,6 @@ namespace SEO4CEO.Models
     {
         public string ExpectedUri { get; set; }
         public List<int> MatchedPositions;
+        public List<QueryResult> QueryResults;
     }
 }

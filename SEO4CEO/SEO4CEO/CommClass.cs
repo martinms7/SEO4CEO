@@ -53,8 +53,24 @@ namespace SEO4CEO
             return new SearchResponse()
             {
                 ExpectedUri = response.ExpectedUri,
-                MatchedPositions = response.MatchedPositions
+                MatchedPositions = response.MatchedPositions,
+                QueryResults = MapQueryResults(response)
             };
+        }
+
+        private List<QueryResult> MapQueryResults(DomainResponse response)
+        {
+            var queryResults = new List<QueryResult>();
+            foreach(var result in response.SeoResults)
+            {
+                queryResults.Add(new QueryResult()
+                {
+                    Hits = result.Hits,
+                    TopPosition = result.TopPosition,
+                    DateTimeUtc = result.DateTimeUtc
+                });
+            }
+            return queryResults;
         }
     }
 }

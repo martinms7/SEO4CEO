@@ -1,7 +1,9 @@
 ﻿using log4net;
 using SEO4CEO_Core.DomainModels;
+using SEO4CEO_Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,16 +12,24 @@ namespace SEO4CEO_Core
 {
     public class SearchService : ISearchService
     {
-        private ISearchRequestHandler _requestHandler;
         private readonly static ILog _log =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private ISearchRequestHandler _requestHandler;
+        private ISqlRepository _sqlRepository;
         public SearchService():this(new GoogleRequestHandler())
         {
 
         }
-        public SearchService(ISearchRequestHandler requestHandler)
+        public SearchService(ISearchRequestHandler requestHandler) : this(requestHandler, new SqlRespository())
         {
             _requestHandler = requestHandler;
+        }
+
+        public SearchService(ISearchRequestHandler requestHandler, ISqlRepository sqlRespository)
+        {
+            _requestHandler = requestHandler;
+            _sqlRepository = sqlRespository;
         }
 
         public DomainResponse FindUriInSearch(DomainRequest request)
@@ -65,6 +75,14 @@ namespace SEO4CEO_Core
                     response.MatchedPositions.Add(resultIndex);
                 }
             }
+
+            if (response.MatchedPositions != null && response.MatchedPositions.Count > 0)
+            {
+                _sqlRepository.InsertSearchResults(response.MatchedPositions.Count,
+                    response.MatchedPositions.OrderByDescending(i => i).First());
+            }
+            response.SeoResults = _sqlRepository.RetrieveTopResults().ToList();
+
 
             return response;
         }

@@ -6,13 +6,19 @@ using System.Data;
 
 namespace SEO4CEO_Data
 {
-    public class SqlRespository
+    public class SqlRespository : ISqlRepository
     {
         private readonly static ILog _log =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private static readonly string dbSource = "./SqliteDB.db";
-        public void firstRun()
+
+        public SqlRespository()
+        {
+            firstRun();
+        }
+
+        public static void firstRun()
         {
             var connectionStringBuilder = new SqliteConnectionStringBuilder();
 
@@ -23,48 +29,16 @@ namespace SEO4CEO_Data
             {
                 connection.Open();
 
-                //Create a table (drop if already exists first):
-
-                var delTableCmd = connection.CreateCommand();
-                delTableCmd.CommandText = "DROP TABLE IF EXISTS Seo_Results";
-                delTableCmd.ExecuteNonQuery();
 
                 var createTableCmd = connection.CreateCommand();
-                createTableCmd.CommandText = @"CREATE TABLE Seo_Results(Id INTEGER PRIMARY KEY,
+                createTableCmd.CommandText = @"CREATE TABLE IF NOT EXISTS Seo_Results(Id INTEGER PRIMARY KEY,
 Hits INTEGER,
 TopPosition INTEGER,
 DateTime INTEGER)";
                 createTableCmd.ExecuteNonQuery();
 
-                //Seed some data:
-                using (var transaction = connection.BeginTransaction())
-                {
-                    var insertCmd = connection.CreateCommand();
-
-                    insertCmd.CommandText = "INSERT INTO Seo_Results VALUES('')";
-                    insertCmd.ExecuteNonQuery();
-
-                    insertCmd.CommandText = "INSERT INTO favorite_beers VALUES('JAI ALAI IPA')";
-                    insertCmd.ExecuteNonQuery();
-
-                    insertCmd.CommandText = "INSERT INTO favorite_beers VALUES('RANGER IPA')";
-                    insertCmd.ExecuteNonQuery();
-
-                    transaction.Commit();
-                }
 
                 //Read the newly inserted data:
-                var selectCmd = connection.CreateCommand();
-                selectCmd.CommandText = "SELECT name FROM favorite_beers";
-
-                using (var reader = selectCmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var message = reader.GetString(0);
-                        Console.WriteLine(message);
-                    }
-                }
 
 
             }
@@ -75,6 +49,7 @@ DateTime INTEGER)";
             try
             {
                 var connectionStringBuilder = new SqliteConnectionStringBuilder();
+                connectionStringBuilder.DataSource = dbSource;
                 using (var connection = new SqliteConnection(connectionStringBuilder.ConnectionString))
                 {
                     connection.Open();
@@ -85,7 +60,7 @@ DateTime INTEGER)";
                         var insertCmd = connection.CreateCommand();
 
                         insertCmd.CommandText = $"INSERT INTO Seo_Results (Hits,TopPosition,DateTime) " +
-                        $"VALUES({hits}, {topPosition}, {DateTime.UtcNow})";
+                        $"VALUES({hits}, {topPosition}, {ConvertToUnix(DateTime.UtcNow)})";
 
                         insertCmd.ExecuteNonQuery();
 
@@ -106,7 +81,7 @@ DateTime INTEGER)";
             return success;
         }
 
-        public IEnumerable<SeoResult> GetTopResults()
+        public IEnumerable<SeoResult> RetrieveTopResults()
         {
             var seoResults = new List<SeoResult>();
             try
@@ -119,19 +94,21 @@ DateTime INTEGER)";
 
                 using (var connection = new SqliteConnection(connectionStringBuilder.ConnectionString))
                 {
+                    connection.Open();
+
                     var selectCmd = connection.CreateCommand();
-                    selectCmd.CommandText = "SELECT Id," +
-                        "Hits," +
-                        "TopPosition," +
-                        "DateTime" +
-                        "FROM Seo_Results" +
-                        "ORDER BY TopPosition desc" +
+                    selectCmd.CommandText = "SELECT " +
+                        "Hits, " +
+                        "TopPosition, " +
+                        "DateTime " +
+                        "FROM Seo_Results " +
+                        "ORDER BY TopPosition desc " +
                         "LIMIT 3";
 
                     using (var reader = selectCmd.ExecuteReader())
                     {
-                        var datatable = new DataTable();
-                        datatable.Load(reader);
+                        //var datatable = new DataTable();
+                        //datatable.Load(reader);
                         var result = new SeoResult();
                         while (reader.Read())
                         {
@@ -149,6 +126,12 @@ DateTime INTEGER)";
                 
             }
             return seoResults;
+        }
+
+        private int ConvertToUnix(DateTime dateTime)
+        {
+            var dateTimeOffset = new DateTimeOffset(dateTime);
+            return (int) dateTimeOffset.ToUnixTimeSeconds();
         }
     }
 }

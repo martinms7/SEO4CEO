@@ -13,17 +13,32 @@
         </h5>
 
         @*<h1 data-bind="text: Keywords"></h1>*@
-
+        <div>
         <table>
             <thead>
                 <tr><th>Positions</th></tr>
             </thead>
             <tbody data-bind="foreach: MatchedPositions">
-                <tr>
-                    <td data-bind="text: $data"></td>
-                </tr>
+                @foreach (var position in Model.MatchedPositions)
+                {
+                    <tr>
+                        <td data-bind="text: $data">@position</td>
+                    </tr>
+                }
             </tbody>
         </table>
+        </div>
+
+        @*<table>
+            <thead>
+                <tr><th>Positions</th></tr>
+            </thead>
+            <tbody data-bind="foreach: MatchedPositions">
+                    <tr>
+                        <td data-bind="text: $data">@position</td>
+                    </tr>
+            </tbody>
+        </table>*@
 
         @*<ul>
             @foreach (var position in Model.MatchedPositions)
@@ -43,6 +58,29 @@
                  }
             </tbody>
         </table>*@
+    </div>
+
+    <div class="container">
+        <h5>Top 3 Matches All Time</h5>
+        <table class="table-bordered">
+            <thead>
+                <tr>
+                    <th>HitCount</th>
+                    <th>TopPosition</th>
+                    <th>DateTime UTC</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: QueryResults">
+               @foreach (var result in Model.QueryResults)
+               {
+                <tr>
+                    <td data-bind="text: Hits">@result.Hits</td>
+                    <td data-bind="text: TopPosition">@result.TopPosition</td>
+                    <td data-bind="text: DateTimeUtc">@result.DateTimeUtc</td>
+                </tr>
+               }
+            </tbody>
+        </table>
     </div>
     <script src="~/lib/knockout/knockout-3.5.1.js"></script>
     <script type="text/javascript">
