@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SEO4CEO", "SEO4CEO\SEO4CEO.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SEO4CEO_Core", "SEO4CEO_Core\SEO4CEO_Core.csproj", "{A73DAF5D-C1EF-4700-A66F-FD1BC31371AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SEO4CEO_CoreTests", "SEO4CEO_CoreTests\SEO4CEO_CoreTests.csproj", "{488FBF21-4542-426A-AC61-2429C917702C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SEO4CEO_CoreTests", "SEO4CEO_CoreTests\SEO4CEO_CoreTests.csproj", "{488FBF21-4542-426A-AC61-2429C917702C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SEO4CEO_Data", "SEO4CEO_Data\SEO4CEO_Data.csproj", "{11FA46C5-2FD9-481E-B28B-A9D346E41152}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{488FBF21-4542-426A-AC61-2429C917702C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{488FBF21-4542-426A-AC61-2429C917702C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{488FBF21-4542-426A-AC61-2429C917702C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11FA46C5-2FD9-481E-B28B-A9D346E41152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11FA46C5-2FD9-481E-B28B-A9D346E41152}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11FA46C5-2FD9-481E-B28B-A9D346E41152}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11FA46C5-2FD9-481E-B28B-A9D346E41152}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
